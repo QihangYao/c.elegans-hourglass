@@ -1,0 +1,8 @@
+.vscode
+__pycache__
+figs
+*.graphml
+.ipynb_checkpoints
+
+data/Cook2019/*
+data/Varshney/*

@@ -19,7 +19,7 @@ Code repository for the paper "[A Weighted Network Analysis Framework for the Ho
 
 ### Data Source
 
-This project concerns two open-source dataset:
+This project concerns two open-source datasets:
 1. WormAtlas dataset: [Publication](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1001066), [Dataset](https://www.wormatlas.org/neuronalwiring.html)
 2. WormWiring dataset: [Publication](https://www.nature.com/articles/s41586-019-1352-7), [Dataset](https://wormwiring.org/)
 

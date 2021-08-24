@@ -20,7 +20,7 @@ Code repository for the paper "[A Weighted Network Analysis Framework for the Ho
 ### Data Source
 
 This project concerns two open-source datasets:
-1. WormAtlas dataset: [Publication](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1001066), [Dataset](https://www.wormatlas.org/neuronalwiring.html)
+1. WormAtlas dataset: [Publication](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1001066), [Dataset](https://www.wormatlas.org/neuronalwiring.html#NeuronalconnectivityII)
 2. WormWiring dataset: [Publication](https://www.nature.com/articles/s41586-019-1352-7), [Dataset](https://wormwiring.org/)
 
 Currently in `data.py` there are several places where we hard-coded the paths to be `data/Varshney2011` and `data/Cook2019` for these two datasets, correspondingly. However, you can still replace the hard-coded path with the paths you like. 

@@ -106,7 +106,7 @@ def parse_select(connectome, sources, targets, method_str):
             result = tol_regex.search(args)
             if result is not None:
                 tolerance = int(result.group(1))
-            print(tolerance)
+                print(tolerance)
             max_hops_regex = re.compile("p([1-9][0-9]*|0)")
             result = max_hops_regex.search(args)
             if result is not None:

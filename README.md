@@ -8,7 +8,10 @@ Code repository for the paper "[A Weighted Network Analysis Framework for the Ho
 
 - `/data.py` -- Functions for building, reading and preprocessing connectome data.
 - `/hourglass.py` -- Functions for hourglass analysis based on paths.
-- `/main.py` -- Main script and functions for hourglass analysis on weighted C.elegans connectome.
+- `/main.py` -- Main script and functions for hourglass analysis on weighted C.elegans connectome， mainly including:
+    - `compare_path_weighting` for comparing different path weight methods on a fixed connectome.
+    - `compare_hourglass` for comparing the tau-core, node coverage and the hourglass scores among different configuration of datasets and path weighting methods.
+    - `path_weighting_random_test` for comparing the hourglass effect in the empirical connectome and random networks.
 - `/path_selection.py` -- PathSelection class, which mainly contains functions for selection and weighting of paths in a connectome.
 - `/randomize.py` -- Functions for randomization of connectomes.
 - `/summary.py` -- Functions to summarize the data, intermediate result and final result. 

@@ -1,4 +1,6 @@
 """ Functions to summarize the data, intermediate result and final result. """
+import os
+
 import numpy as np
 import pandas as pd
 
@@ -6,6 +8,8 @@ import scipy
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+if not os.path.exists("figs"):
+    os.makedirs("figs")
 
 def connectome_info(connectome):
     """ Show a brief summary of the connectome. 

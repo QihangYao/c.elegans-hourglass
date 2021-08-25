@@ -26,7 +26,7 @@ MAX_TAU = 0.95
 def compare_count_size_connectome(sex, connection_type, preprocess=False):
     """ Compare the count and the size of the connectome. 
     Args:
-        sex (str): sex of the connectome to be compared.
+        sex (str): sex of the connectome to be compared. Currently support ["herm", "male"].
         connection_type (str): type of the connection, which could be either
             "chem synapse" or "gap jn"
         preprocess (bool): whether to preprocess using data.preprocess before
@@ -480,13 +480,13 @@ def path_weighting_random_test(
 
 if __name__ == "__main__":
 
-
     # Using the existing functions in the main.py we can conduct several
     # Analysis
 
     ### Example 1 - Hourglass Effect Comparison ###
     # Compare the tau-core, node coverage and the hourglass scores, among
     # different configuration of datasets and methods.
+    print("Example 1 - Hourglass Effect Comparison")
     compare_hourglass(
         [
             # varshney dataset with unweighted method
@@ -498,22 +498,23 @@ if __name__ == "__main__":
             # synapse count as weight) with MET method
             "herm-chem synapse-count-length,p4-met:Cook-MET",
         ],
-        "figs/varshney-vs-cook-", # prefix to the resulted figure.
-        xlabel="Connectome-Method", 
+        "figs/varshney-vs-cook-",  # prefix to the resulted figure.
+        xlabel="Connectome-Method",
     )
 
     ### Example 2 - Randomization test ###
     # Compare the hourglass on the empricial connectome and randomized
     # networks.
-
+    
+    print("Example 2 - Randomization test")
     path_weighting_random_test(
-        "herm",                         # hermaphrodite
-        "chem synapse",                 # chemical synapse only
-        "count",                        # synapse count as weight
-        "length,p4",                    # path with length <= 4
-        "met",                          # MET method
-        randomize_method="edge-weight", # Edge weight permutation
-        num_random_samples=500, 
+        "herm",  # hermaphrodite
+        "chem synapse",  # chemical synapse only
+        "count",  # synapse count as weight
+        "length,p4",  # path with length <= 4
+        "met",  # MET method
+        randomize_method="edge-weight",  # Edge weight permutation
+        num_random_samples=500,
         multi_process=True,
     )
 

@@ -1,5 +1,7 @@
 """ Functions for building, reading and preprocessing connectome data. """
 import os
+import urllib.request
+import urllib.parse
 
 import networkx as nx
 import pandas as pd
@@ -8,6 +10,37 @@ import pandas as pd
 CONNECTION_TYPES = ["chem synapse", "gap jn"]
 WEIGHT_TYPES = ["count", "size"]
 ABBR = {"chem synapse": "cs", "gap junction": "gj", "count": "ct", "size": "sz"}
+
+DATA_DIR = "data"
+COOK_DATASET_DIR = os.path.join("data", "Cook2019")
+VARSHNEY_DATASET_DIR = os.path.join("data", "Varshney2011")
+
+if not os.path.exists(DATA_DIR):
+    os.makedirs(DATA_DIR)
+
+if not os.path.exists(VARSHNEY_DATASET_DIR):
+    os.makedirs(VARSHNEY_DATASET_DIR)
+    print("Download the Varshney2011 dataset...")
+    file_urls = [
+        (name, "https://www.wormatlas.org/images/" + name)
+        for name in ["NeuronConnect.xls"]
+    ]
+    for name, url in file_urls:
+        urllib.request.urlretrieve(url, os.path.join(VARSHNEY_DATASET_DIR, name))
+
+if not os.path.exists(COOK_DATASET_DIR):
+    os.makedirs(COOK_DATASET_DIR)
+    print("Download the Cook2019 dataset...")
+    file_urls = [
+        (name, "https://wormwiring.org/si/" + urllib.parse.quote(name))
+        for name in [
+            "SI 2 Synapse adjacency matrices.xlsx",
+            "SI 4 Cell lists.xlsx",
+            "SI 5 Connectome adjacency matrices, corrected July 2020.xlsx",
+        ]
+    ]
+    for name, url in file_urls:
+        urllib.request.urlretrieve(url, os.path.join(COOK_DATASET_DIR, name))
 
 
 def get_abbr(name):
@@ -21,7 +54,7 @@ def get_abbr(name):
 def extract_cell_list(sex, dataset_path, verbose=False):
     """ Extract cell list of the Cook 2019 dataset.
     Args:
-        sex (str): sex of target connectome.
+        sex (str): sex of target connectome. Currently support ["herm", "male"].
         dataset_path (str): path to the Cook 2019 connectome dataset.
     Returns:
         cell_list (pandas.DataFrame): Cell list containing information like
@@ -49,7 +82,6 @@ def extract_cell_list(sex, dataset_path, verbose=False):
             index_col=False,
             names=["cell name", "cell type", "cell category"],
         )
-
 
     elif sex == "male":
         sex_specific_cell_list = pd.read_excel(
@@ -98,7 +130,7 @@ def read_adjacency_matrix(filename, sheet_name):
 def extract_edgelist(sex, dataset_path, connection_type, weight_type):
     """ Extract an adjacency matrix from the dataset.
     Args:
-        sex (str): sex of the target connectome.
+        sex (str): sex of the target connectome. Currently support ["herm", "male"].
         dataset_path (str): path to Cook2019 dataset.
         connection_type (str): type of connectione. Could either be 
             "gap jn" or "chem synapse".
@@ -186,7 +218,7 @@ def extract_connectome_cook2019(
     connection_types,
     weight_types,
     graph_type,
-    dataset_path="data/Cook2019",
+    dataset_path=COOK_DATASET_DIR,
     verbose=False,
 ):
     """ Extract the connectome as a graph from the Cook 2019 dataset.
@@ -269,21 +301,16 @@ def extract_connectome_cook2019(
     return connectome
 
 
-def extract_connectome_varshney2011(dataset_path="data/Varshney2011"):
+def extract_connectome_varshney2011(dataset_path=VARSHNEY_DATASET_DIR):
     """ Extract connectome as a graph from the Varshney 2011 dataset.
     Args:
-        # connection_types (list): type of the connections to be included in graph.
         dataset_path (str): path to the Varshney2011 connectome dataset.
-        # graph_type (str): type of graph. "graph" for single-edge graph or 
-        #     "multi-graph" for multi-edge graph. If "multi-graph" is specified,
-        #     multiple edge is allowed between two neurons with the connection type
-        #     as key to discriminate between the edges.
     Returns:
         G (networkX.DiGraph): NetworkX DiGraph instances used to represent the
             extracted connectomes.
     """
     # Use the cell list in the Cook dataset for simplicity
-    cell_list = extract_cell_list("herm", "data/Cook2019")
+    cell_list = extract_cell_list("herm", COOK_DATASET_DIR)
     # Get edge list
     edge_list = pd.read_excel(os.path.join(dataset_path, "NeuronConnect.xls"))
     # Use only the chemical synapses
@@ -302,8 +329,6 @@ def extract_connectome_varshney2011(dataset_path="data/Varshney2011"):
     nx.set_node_attributes(G, cell_information)
 
     return G
-
-
 
 
 def get_connectome(
@@ -333,6 +358,7 @@ def get_connectome(
     connectome_path += "connectome.graphml"
     # Create cache if not exist
     if not os.path.exists(connectome_path):
+        print("Creating the cache for the Cook2019 connectome.")
         connectome = extract_connectome_cook2019(
             sex, connection_types, weight_types, graph_type
         )
@@ -389,13 +415,15 @@ def preprocess(
     connectome = connectome.subgraph(neurons.keys())
     # Are they weakly connected?
     if not nx.is_weakly_connected(connectome):
-        print("The filtered connectome is not weakly connected.")
+        if verbose:
+            print("The filtered connectome is not weakly connected.")
         components = list(nx.weakly_connected_components(connectome))
         connectome = connectome.subgraph(components[0])
         for i, c in enumerate(components[1:]):
-            print("Component #%d" % (i + 1))
-            for n in c:
-                print(n)
+            if verbose:
+                print("Component #%d" % (i + 1))
+                for n in c:
+                    print(n)
     # Remove sex specific neurons if required.
     if remove_sex_specific:
         shared_neurons = [
